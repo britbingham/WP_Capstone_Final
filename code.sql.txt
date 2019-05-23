@@ -1,0 +1,121 @@
+
+select *
+from survey
+limit 10;
+
+select question,
+ 	count(distinct user_id)
+from survey
+group by 1;
+
+select *
+from quiz
+limit 5;
+
+select *
+from home_try_on
+limit 5;
+
+select *
+from purchase
+limit 5;
+
+
+---Survey Funnel
+
+SELECT *
+FROM survey
+LIMIT 10;
+
+select question,	
+   user_id,  
+   response
+from survey
+group by 1;
+
+
+---Style Purchase
+
+select style,
+ 	count(distinct user_id)
+from purchase
+group by 1;
+
+---Model Purchase
+
+select model_name,
+ 	count(distinct user_id)
+from purchase
+group by 1
+order by 2 desc;
+
+---Price Purchase
+select price,
+ 	count(distinct user_id)
+from purchase
+group by 1
+order by 2 desc;
+
+---Women's purchase
+
+select style,
+model_name,
+count(distinct user_id),
+price
+from purchase
+where style like 'Women%'
+group by 2
+order by 3 desc;
+
+---Men's purchase
+
+select style,
+model_name,
+count(distinct user_id),
+price
+from purchase
+where style like 'Men%'
+group by 2
+order by 3 desc;
+
+---Total
+
+select style,
+model_name,
+count(distinct user_id),
+price
+from purchase
+group by 2
+order by 3 desc;
+
+---
+
+select distinct q.user_id,
+	h.user_id is not null as 'is_home_try_on',
+  h.number_of_pairs,
+  p.user_id is not null as 'is_purchase'
+from quiz q
+left join home_try_on h
+	on q.user_id = h.user_id
+left join purchase p
+	on p.user_id = q.user_id
+limit 10;
+
+---AB Test num pairs
+
+with funnels as
+(select distinct q.user_id,
+	h.user_id is not null as 'is_home_try_on',
+  h.number_of_pairs as 'num_pairs',
+  p.user_id is not null as 'is_purchase'
+from quiz q
+left join home_try_on h
+	on q.user_id = h.user_id
+left join purchase p
+	on p.user_id = q.user_id)
+select num_pairs,
+  sum(is_purchase) as 'num_purchase'
+from funnels
+group by 1;
+
+
